@@ -1,242 +1,103 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Console de Gestion - Bar</title>
-    <style>
-        :root {
-            --admin-dark: #1a1d20;
-            --admin-border: #dee2e6;
-            --admin-bg: #f4f7f9;
-        }
+{% extends "layout.html" %}
 
-        body {
-            background-color: var(--admin-bg);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            color: #333;
-            letter-spacing: -0.01em;
-            padding-bottom: 50px;
-        }
+{% block title %}Dashboard - Tables{% endblock %}
 
-        .app-header {
-            background: white;
-            border-bottom: 1px solid var(--admin-border);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
-
-        /* Structure des cartes */
-        .table-card {
-            background: white;
-            border: 1px solid var(--admin-border);
-            border-radius: 4px;
-            display: flex;
-            flex-direction: column;
-            height: 100%; /* Important pour l'alignement */
-            transition: border-color 0.2s;
-        }
-
-        .table-card:hover { border-color: #adb5bd; }
-
-        .table-header {
-            padding: 1rem;
-            border-bottom: 1px solid var(--admin-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .table-number {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-
-        .table-total { font-weight: 700; font-size: 1.1rem; }
-
-        .table-body {
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1; /* Pousse les boutons vers le bas */
-        }
-
-        /* Liste des consommations optimisée */
-        .conso-list {
-            flex-grow: 1;
-            margin-bottom: 1.5rem;
-        }
-
-        .conso-item {
-            font-size: 0.85rem;
-            padding: 0.4rem 0;
-            border-bottom: 1px solid #f0f0f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .conso-name {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            flex-grow: 1;
-        }
-
-        .conso-price {
-            white-space: nowrap;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: 600;
-            color: #444;
-        }
-
-        /* États et Boutons */
-        .status-paid { background-color: #fafafa; border-style: dashed; }
-        .status-paid .table-body, .status-paid .table-header { opacity: 0.5; }
-
-        .btn-admin {
-            border-radius: 2px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-
-        #status-footer {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: #d63939;
-            color: white;
-            font-size: 0.8rem;
-            text-align: center;
-            padding: 0.6rem;
-            z-index: 2000;
-            font-weight: 600;
-        }
-
-        @media (max-width: 576px) {
-            .table-total { font-size: 1rem; }
-        }
-    </style>
-</head>
-<body>
-
-<div id="status-footer">
-    CONNEXION INTERROMPUE — MODE LECTURE SEULE
-    <button class="btn btn-sm btn-outline-light ms-2 py-0" style="font-size: 0.7rem" onclick="location.reload()">RECONNECTER</button>
+{% block content %}
+<div class="d-flex justify-content-end mb-4">
+    <button class="btn btn-dark btn-sm px-3 fw-bold text-uppercase" style="font-size: 0.7rem;" data-bs-toggle="collapse" data-bs-target="#configPanel">
+        + Nouvelle Table
+    </button>
 </div>
 
-<header class="app-header shadow-sm">
-    <div class="container d-flex justify-content-between align-items-center">
-        <span class="fw-bold text-uppercase small tracking-wider text-secondary">Gestion de Caisse</span>
-        <button class="btn btn-dark btn-sm px-3 btn-admin" data-bs-toggle="collapse" data-bs-target="#configPanel">
-            + Nouvelle Table
-        </button>
+<div class="collapse mb-4" id="configPanel">
+    <div class="p-3 bg-white border border-dark shadow-sm">
+        <form action="/ajouter-table" method="POST" class="row g-2 align-items-center">
+            <div class="col-auto">
+                <input type="number" name="numero" class="form-control form-control-sm rounded-0" placeholder="Numéro ID" required>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark btn-sm text-uppercase fw-bold" style="font-size: 0.7rem;">Créer la table</button>
+            </div>
+        </form>
     </div>
-</header>
+</div>
 
-<div class="container">
-    <div class="collapse mb-4" id="configPanel">
-        <div class="p-3 bg-white border border-dark shadow-sm">
-            <form action="/ajouter-table" method="POST" class="row g-2 align-items-center">
-                <div class="col-auto">
-                    <input type="number" name="numero" class="form-control form-control-sm rounded-0" placeholder="Numéro ID" required>
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-dark btn-sm btn-admin">Créer la table</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="row g-3 align-items-start"> 
+    {% for table in tables %}
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+        <div class="card card-table-pos shadow-sm {% if table.est_payee %}opacity-75 bg-light{% endif %}">
+            <div class="p-3 border-bottom d-flex justify-content-between bg-white">
+                <span class="fw-bold small text-muted">TABLE {{ table.numero }}</span>
+                <span class="fw-bold text-dark">{{ "{:,.0f}".format(stats[table.id])|replace(',', ' ') }} Ar</span>
+            </div>
 
-    <div class="row g-3">
-        {% for table in tables %}
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
-            <div class="table-card shadow-sm {% if table.est_payee %}status-paid{% endif %}">
-                <div class="table-header">
-                    <span class="table-number">Table {{ table.numero }}</span>
-                    <span class="table-total">{{ "%.2f"|format(stats[table.id]) }} €</span>
-                </div>
-                
-                <div class="table-body">
-                    <div class="conso-list">
-                        {% for c in table.consommations %}
+            <div class="p-3"> 
+                <div class="table-content-list"> 
+                    {% for c in table.consommations %}
                         <div class="conso-item">
-                            <span class="conso-name" title="{{ c.produit.nom }}">
-                                {{ c.quantite }}x {{ c.produit.nom }}
-                            </span>
-                            <span class="conso-price">
-                                {{ "%.2f"|format(c.quantite * c.produit.prix) }}€
-                            </span>
+                            <span class="conso-name" title="{{ c.produit.nom }}">{{ c.quantite }}x {{ c.produit.nom }}</span>
+                            <div class="conso-right-block">
+                                <span class="conso-price">{{ "{:,.0f}".format(c.quantite * c.produit.prix)|replace(',', ' ') }} Ar</span>
+                                
+                                {% if not table.est_payee %}
+                                <form action="/supprimer-conso" method="POST" class="m-0">
+                                    <input type="hidden" name="table_id" value="{{ table.id }}">
+                                    <input type="hidden" name="produit_id" value="{{ c.produit.id }}">
+                                    <input type="hidden" name="nombre" value="1">
+                                    <button type="submit" class="btn-delete" title="Retirer 1">×</button>
+                                </form>
+                                {% endif %}
+                            </div>
                         </div>
-                        {% else %}
-                        <div class="text-center py-3 text-muted small" style="font-style: italic;">
-                            Aucune commande
-                        </div>
-                        {% endfor %}
-                    </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted small italic opacity-50">Table vide</div>
+                    {% endfor %}
+                </div>
 
-                    <div class="d-grid gap-2">
-                        {% if not table.est_payee %}
-                            <button class="btn btn-outline-primary btn-admin py-2" data-bs-toggle="modal" data-bs-target="#modal{{ table.id }}">
-                                Ajouter Article
+                <div class="footer-actions d-grid gap-2 mt-3">
+                    {% if not table.est_payee %}
+                        <button class="btn btn-outline-primary btn-sm fw-bold text-uppercase py-2" data-bs-toggle="modal" data-bs-target="#modal{{ table.id }}" style="font-size: 0.7rem;">
+                            Ajouter
+                        </button>
+                        <form action="/payer/{{ table.id }}" method="POST">
+                            <button type="submit" class="btn btn-dark btn-sm fw-bold text-uppercase w-100 py-2" style="font-size: 0.7rem;" {% if stats[table.id] == 0 %}disabled{% endif %}>
+                                Clôturer
                             </button>
-                            <form action="/payer/{{ table.id }}" method="POST">
-                                <button type="submit" class="btn btn-dark btn-admin w-100 py-2" {% if stats[table.id] == 0 %}disabled{% endif %}>
-                                    Clôturer
-                                </button>
-                            </form>
-                        {% else %}
-                            <form action="/ouvrir/{{ table.id }}" method="POST">
-                                <button type="submit" class="btn btn-outline-secondary btn-admin w-100 py-2">
-                                    Réactiver
-                                </button>
-                            </form>
-                        {% endif %}
-                    </div>
+                        </form>
+                    {% else %}
+                        <form action="/ouvrir/{{ table.id }}" method="POST">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold text-uppercase w-100 py-2" style="font-size: 0.7rem;">
+                                Réactiver
+                            </button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
-
-        <div class="modal fade" id="modal{{ table.id }}" tabindex="-1">
-            <div class="modal-dialog modal-sm modal-dialog-centered">
-                <div class="modal-content rounded-0 border-dark">
-                    <form action="/ajouter-conso" method="POST">
-                        <div class="modal-body p-4">
-                            <input type="hidden" name="table_id" value="{{ table.id }}">
-                            <p class="text-uppercase fw-bold small text-muted mb-3">Commande Table {{ table.numero }}</p>
-                            
-                            <select name="produit_id" class="form-select form-select-sm rounded-0 mb-3" required>
-                                {% for p in produits %}
-                                    <option value="{{ p.id }}">{{ p.nom }} — {{ p.prix }} €</option>
-                                {% endfor %}
-                            </select>
-
-                            <input type="number" name="nombre" class="form-control form-control-sm rounded-0 mb-3 text-center" min="1" value="1" required>
-                            
-                            <button type="submit" class="btn btn-dark btn-sm btn-admin w-100 py-2">Confirmer</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    function checkConnection() {
-        fetch('/', { method: 'HEAD', cache: 'no-store' })
-        .then(res => document.getElementById('status-footer').style.display = res.ok ? 'none' : 'block')
-        .catch(() => document.getElementById('status-footer').style.display = 'block');
-    }
-</script>
-</body>
-</html>
+    <div class="modal fade" id="modal{{ table.id }}" tabindex="-1">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content rounded-0 border-dark shadow">
+                <form action="/ajouter-conso" method="POST">
+                    <div class="modal-body p-4">
+                        <input type="hidden" name="table_id" value="{{ table.id }}">
+                        <p class="text-uppercase fw-bold small text-muted mb-3 text-center">Table {{ table.numero }}</p>
+                        
+                        <select name="produit_id" class="form-select form-select-sm rounded-0 mb-3" required>
+                            {% for p in produits %}
+                                <option value="{{ p.id }}">{{ p.nom }} — {{ "{:,.0f}".format(p.prix)|replace(',', ' ') }} Ar</option>
+                            {% endfor %}
+                        </select>
+
+                        <input type="number" name="nombre" class="form-control form-control-sm rounded-0 mb-3 text-center" min="1" value="1" required>
+                        
+                        <button type="submit" class="btn btn-dark btn-sm fw-bold text-uppercase w-100 py-2" style="font-size: 0.7rem;">Confirmer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

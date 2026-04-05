@@ -7,3 +7,7 @@ Gestion de Bar - Caisse - Stock
 
 ### Rapid Launch
     fastapi dev
+
+### Illustrations:
+ * Screenshoot of the home page
+![Image non trouvée](illustrations/capture00.png)

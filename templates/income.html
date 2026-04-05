@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}Statistiques de Vente{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card border-0 shadow-sm rounded-0">
+            <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                <h2 class="h5 text-uppercase fw-bold mb-0 tracking-tight">Encaissements</h2>
+                <span class="badge bg-dark px-3 py-2 fs-6 rounded-0">{{ "{:,.0f}".format(total_income)|replace(',', ' ') }} Ar</span>
+            </div>
+            
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr class="small text-uppercase text-muted">
+                                <th class="ps-4">Article</th>
+                                <th class="text-center">Qté</th>
+                                <th class="text-end">Unitaire - Ar</th>
+                                <th class="text-end pe-4">Sous-total - Ar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in details %}
+                            <tr>
+                                <td class="ps-4 fw-bold text-dark">{{ item.produit }}</td>
+                                <td class="text-center">{{ item.quantite }}</td>
+                                <td class="text-end text-muted font-monospace small">
+                                    {{ "{:,.0f}".format(item.prix_unitaire)|replace(',', ' ') }}
+                                </td>
+                                <td class="text-end pe-4 fw-bold font-monospace">
+                                    {{ "{:,.0f}".format(item.total)|replace(',', ' ') }}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted italic">Aucune vente enregistrée.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

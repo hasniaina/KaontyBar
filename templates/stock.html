@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+
+{% block title %}Gestion du Stock{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white fw-bold text-uppercase small">Nouveau Produit</div>
+            <div class="card-body">
+                <form action="/stock/add" method="POST" class="row g-2">
+                    <div class="col-7">
+                        <input type="text" name="nom" class="form-control form-control-sm" placeholder="Nom de l'article" required>
+                    </div>
+                    <div class="col-3">
+                        <input type="number" name="prix" step="0.01" class="form-control form-control-sm" placeholder="Prix" required>
+                    </div>
+                    <div class="col-2">
+                        <button type="submit" class="btn btn-dark btn-sm w-100">OK</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold text-uppercase small text-muted">Articles en Stock</div>
+            <div class="list-group list-group-flush">
+                {% for p in produits %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">{{ p.nom }}</span>
+                    <span class="badge bg-light text-dark border">{{ "{:,.0f}".format(p.prix)|replace(',', ' ')  }} Ar</span>
+                </div>
+                {% else %}
+                <div class="list-group-item text-center text-muted py-4 small">Aucun produit configuré</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

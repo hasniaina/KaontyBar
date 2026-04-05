@@ -1,0 +1,178 @@
+/* --- VARIABLES ET BASES --- */
+:root {
+    --admin-border: rgba(0, 0, 0, 0.08);
+    --admin-bg: #f4f7f9;
+    --text-dark: #1a1d20;
+    --text-muted: #6c757d;
+    --danger: #dc3545;
+    --primary: #0d6efd;
+}
+
+body {
+    background-color: var(--admin-bg);
+    font-family: 'Inter', sans-serif;
+    padding-top: 90px;   /* Espace pour le header fixe */
+    padding-bottom: 70px; /* Espace pour le footer fixe */
+}
+
+/* --- HEADER ET NAVIGATION --- */
+.app-header {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--admin-border) !important;
+    z-index: 1030;
+    height: 70px;
+    display: flex;
+    align-items: center;
+}
+
+.logo-circle {
+    width: 32px;
+    height: 32px;
+    background-color: var(--text-dark);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 900;
+}
+
+.brand-text {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: -0.02em;
+    color: #212529;
+}
+
+.nav-link-custom {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+}
+
+.nav-link-custom:hover {
+    color: #000;
+}
+
+.nav-link-custom::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #000;
+    transition: width .3s;
+}
+
+.nav-link-custom:hover::after {
+    width: 100%;
+}
+
+/* --- COMPOSANTS DES TABLES --- */
+.card-table-pos {
+    background: white;
+    border: 1px solid var(--admin-border);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    height: auto; /* Important : empêche l'étirement vertical */
+}
+
+/* Liste des consommations */
+.table-content-list {
+    max-height: 350px; /* Limite pour les très longues listes */
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.conso-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.conso-item:last-child {
+    border-bottom: none;
+}
+
+.conso-name {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.conso-right-block {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.conso-price {
+    font-family: monospace;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-right: 8px;
+}
+
+/* Bouton de suppression rapide */
+.btn-delete {
+    color: #ced4da;
+    background: none;
+    border: none;
+    font-weight: bold;
+    padding: 0 4px;
+    line-height: 1;
+    font-size: 1.1rem;
+    transition: color 0.2s;
+}
+
+.btn-delete:hover {
+    color: var(--danger);
+}
+
+.footer-actions {
+    margin-top: 10px; /* Espace fixe entre la liste et les boutons */
+}
+
+/* --- FOOTER ET STATUTS --- */
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 1000;
+    background: white;
+    border-top: 1px solid var(--admin-border);
+}
+
+#status-indicator.offline {
+    color: var(--danger) !important;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 576px) {
+    .app-header .container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .nav-link-custom {
+        font-size: 0.65rem;
+    }
+}
