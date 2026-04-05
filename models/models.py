@@ -12,6 +12,7 @@ class TableBar(SQLModel, table=True):
     numero: int
     est_payee: bool = Field(default=False) # Nouveau champ
     consommations: List["Consommation"] = Relationship(back_populates="table")
+    date_payement: Optional[str] = Field(default=None) # Nouveau champ
 
 class Consommation(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)

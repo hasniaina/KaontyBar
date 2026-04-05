@@ -1,3 +1,5 @@
+from datetime import date
+
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
@@ -90,6 +92,7 @@ async def payer_addition(table_id: int, session: Session = Depends(get_session))
         
         # 2. Marquer la table comme payée (grisée)
         table.est_payee = True
+        table.date_payement = date.today().isoformat()  # Enregistrer la date du paiement
         session.add(table)
         session.commit()
         
@@ -103,3 +106,12 @@ async def ouvrir_table(table_id: int, session: Session = Depends(get_session)):
         session.add(table)
         session.commit()
     return RedirectResponse(url="/", status_code=303)
+
+@app.get("/total-income/produits/")
+async def total_income(session: Session = Depends(get_session)):
+    statement = select(Consommation).join(Produit)
+    consommations = session.exec(statement).all()
+    
+    total = sum(c.quantite * c.produit.prix for c in consommations)
+    
+    return {"total_income": round(total, 2)}
